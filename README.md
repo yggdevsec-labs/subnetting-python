@@ -174,7 +174,7 @@ python -m pip install -e ".[dev]" --no-build-isolation
 
 This workaround bypasses build isolation and is not required for environments where the normal installation succeeds.
 
-## Project status
+## Links
 
-This project is under active development as part of **YggDevSec Labs**. The repository is intended to remain private until it is ready for publication.
-
+- [YggDevSec – Official Website](https://yggdevsec.com/)
+- [Support YggDevSec on Buy Me a Coffee](https://buymeacoffee.com/yggdevsec)

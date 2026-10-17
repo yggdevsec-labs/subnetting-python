@@ -1,4 +1,4 @@
-"""Unit tests for the subnetting CLI."""
+"""Integration tests for the subnetting CLI."""
 
 import pytest
 

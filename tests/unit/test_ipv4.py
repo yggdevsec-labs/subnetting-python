@@ -91,3 +91,29 @@ def test_get_ip_class(cidr, expected_class):
     network = ipaddress.IPv4Network(cidr)
 
     assert get_ip_class(network) == expected_class
+
+
+@pytest.mark.parametrize(
+    ("hosts", "expected_prefix"),
+    [
+        (2, 30),
+        (3, 29),
+        (6, 29),
+        (7, 28),
+        (14, 28),
+        (15, 27),
+        (30, 27),
+        (31, 26),
+        (62, 26),
+        (63, 25),
+        (126, 25),
+        (127, 24),
+        (254, 24),
+        (255, 23),
+        (510, 23),
+        (511, 22),
+    ],
+)
+def test_prefix_for_hosts_boundary_values(hosts, expected_prefix):
+    """Verify subnet prefix calculations at host capacity boundaries."""
+    assert prefix_for_hosts(hosts) == expected_prefix

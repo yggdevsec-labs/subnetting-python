@@ -65,3 +65,52 @@ def test_plan_rejects_insufficient_space():
 
     with pytest.raises(ValueError, match="Not enough space"):
         plan(base, [200, 100])
+
+
+@pytest.mark.parametrize(
+    ("base_cidr", "hosts", "expected"),
+    [
+        (
+            "192.168.1.0/24",
+            [254],
+            ["192.168.1.0/24"],
+        ),
+        (
+            "192.168.1.0/24",
+            [126, 126],
+            ["192.168.1.0/25", "192.168.1.128/25"],
+        ),
+        (
+            "192.168.1.0/30",
+            [2],
+            ["192.168.1.0/30"],
+        ),
+    ],
+)
+def test_plan_accepts_exactly_filled_networks(base_cidr, hosts, expected):
+    """Verify VLSM allocations that exactly fill the parent network."""
+    base = ipaddress.IPv4Network(base_cidr)
+
+    allocations = plan(base, hosts)
+
+    assert [str(a.network) for a in allocations] == expected
+
+
+def test_plan_allocates_last_ipv4_block():
+    """Verify VLSM allocation at the end of the IPv4 address space."""
+    base = ipaddress.IPv4Network("255.255.255.248/29")
+
+    allocations = plan(base, [2, 2])
+
+    assert [str(a.network) for a in allocations] == [
+        "255.255.255.248/30",
+        "255.255.255.252/30",
+    ]
+
+
+def test_plan_rejects_allocation_beyond_ipv4_limit():
+    """Verify VLSM rejects allocations beyond the IPv4 address space."""
+    base = ipaddress.IPv4Network("255.255.255.252/30")
+
+    with pytest.raises(ValueError, match="Not enough space"):
+        plan(base, [2, 2])
